@@ -12,26 +12,29 @@ steps = st.slider("Simulation Steps", 20, 200, 60, step=10)
 # This is a placeholder so your app deploys cleanly.
 # Next, we’ll replace this with your full OrgSim engine.
 def run_compare(managers: int, employees: int, steps: int):
+    reorg_mgrs = max(3, int(managers * 0.6))
+
+    tasks_base = employees * steps * (0.15 + managers * 0.003)
+    tasks_reorg = employees * steps * (0.12 + reorg_mgrs * 0.0025)
+
     baseline = {
         "steps": float(steps),
         "active_headcount": float(managers + employees),
-        "tasks_completed": float(employees * steps * 0.22),
-        "avg_decision_latency_steps": float(max(0.5, 3.0 - managers * 0.05)),
-        "avg_engagement": float(min(0.95, 0.78 + managers * 0.002 - employees * 0.0002)),
-        "avg_burnout": float(min(0.95, 0.25 + employees * 0.0008)),
-        "attrition_events": float(max(0.0, employees * 0.01 - managers * 0.05)),
+        "tasks_completed": float(tasks_base),
+        "avg_decision_latency_steps": float(max(0.5, 4.0 - managers * 0.08)),
+        "avg_engagement": float(min(0.95, 0.82 + managers * 0.004 - employees * 0.0006)),
+        "avg_burnout": float(min(0.95, 0.18 + employees * 0.0012)),
+        "attrition_events": float(max(0.0, employees * 0.015 - managers * 0.08)),
     }
 
-    # "Reorg" example: fewer managers (stress)
-    reorg_mgrs = max(3, int(managers * 0.6))
     reorg = {
         "steps": float(steps),
         "active_headcount": float(reorg_mgrs + employees),
-        "tasks_completed": float(employees * steps * 0.20),
-        "avg_decision_latency_steps": float(max(0.5, 3.0 - reorg_mgrs * 0.05) + 0.6),
-        "avg_engagement": float(max(0.1, baseline["avg_engagement"] - 0.04)),
-        "avg_burnout": float(min(0.99, baseline["avg_burnout"] + 0.05)),
-        "attrition_events": float(min(float(employees), baseline["attrition_events"] + 2.0)),
+        "tasks_completed": float(tasks_reorg),
+        "avg_decision_latency_steps": float(max(0.5, 4.0 - reorg_mgrs * 0.08) + 0.8),
+        "avg_engagement": float(max(0.05, baseline["avg_engagement"] - 0.07)),
+        "avg_burnout": float(min(0.99, baseline["avg_burnout"] + 0.09)),
+        "attrition_events": float(min(float(employees), baseline["attrition_events"] + 4.0)),
     }
 
     return baseline, reorg, reorg_mgrs
@@ -40,8 +43,7 @@ def run_compare(managers: int, employees: int, steps: int):
 # --- Run button ---
 if st.button("Run Simulation"):
     baseline, reorg, reorg_mgrs = run_compare(managers, employees, steps)
-
-    st.subheader("Results")
+st.write("Inputs:", {"managers": managers, "employees": employees, "steps": steps})    st.subheader("Results")
     c1, c2 = st.columns(2)
     with c1:
         st.write("Baseline", baseline)
