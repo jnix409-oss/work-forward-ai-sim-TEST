@@ -11,4 +11,4 @@ if st.button("Run Simulation"):
     st.write("Baseline Results", baseline)
     st.write("Reorg Results", reorg)
 
-!streamlit run app.py
+
